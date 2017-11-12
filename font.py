@@ -1,10 +1,5 @@
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-import reportlab.rl_config
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-
 import bdggeom
+import drawcontext
 
 FEZ_STR = "Squdgy fez, blank jimp crwth vox!"
 TV_STR = "Mr. Jock, TV quiz PhD, bags few lynx."
@@ -120,55 +115,54 @@ def drawStringToDrawContext(drawContext, string, font, posVec, height):
 
 
 def test_strings():
-    c = canvas.Canvas("testfont.pdf",
-                      pagesize = (8*inch, 8*inch))
+    c = drawcontext.DrawContext("testfont", 8, 8)
 
     c.setStrokeColorRGB(1, 0, 0)
 
-    drawStringToCanvas(c, FEZ_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 0.5*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, FEZ_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 0.5),
+                            0.05)
 
-    drawStringToCanvas(c, TV_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 1.0*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, TV_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 1.0),
+                            0.05)
 
-    drawStringToCanvas(c, WALTZ_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 1.5*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, WALTZ_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 1.5),
+                            0.05)
 
-    drawStringToCanvas(c, SPHINX_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 2.0*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, SPHINX_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 2.0),
+                            0.05)
 
-    drawStringToCanvas(c, JUG_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 2.5*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, JUG_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 2.5),
+                            0.05)
 
-    drawStringToCanvas(c, MAZE_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 3.0*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, MAZE_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 3.0),
+                            0.05)
 
-    drawStringToCanvas(c, HOME_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 3.5*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, HOME_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 3.5),
+                            0.05)
     
-    drawStringToCanvas(c, PYTHAG_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 4.0*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, PYTHAG_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 4.0),
+                            0.05)
     
-    drawStringToCanvas(c, MULT_STR,
-                       fontS2,
-                       bdggeom.Vec2f(0.5*inch, 4.5*inch),
-                       0.05 * inch)
+    drawStringToDrawContext(c, MULT_STR,
+                            fontS2,
+                            bdggeom.Vec2f(0.5, 4.5),
+                            0.05)
                        
 
     c.save()
