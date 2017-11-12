@@ -1,0 +1,177 @@
+[
+    {
+	"name" : "cubes",
+	"page_width_inches" : 7,
+	"page_height_inches" : 7,
+	"tile_edge_length_inches" : 0.25,
+	"border_width_inches" : 0.25,
+	"piece_count" : 12,
+	"seed" : "cubes",
+	"out_filename" : "cubes",
+	"output_to_pdf" : true,
+	"output_to_svg" : true,
+	"limited_run" : false,
+	"run_count" : 0,
+
+	"grid_type" : "triangular",
+	"is_fixed_grid_rotation" : true,
+	"fixed_grid_rotation": 0,
+	"points" : [[1, 0],
+		    [0, 1],
+		    [0, 0],
+		    [1, -1]],
+	"transformations": [
+	    {
+		"type" : "rotation",
+		"center" : [0, 0],
+		"join_count" : 3
+	    },
+	    {
+		"type" : "rotation",
+		"center" : [1, 0],
+		"join_count" : 3
+	    }
+	]
+    },
+
+    {
+	"name" : "cairo",
+	"notes" : "https://en.wikipedia.org/wiki/Cairo_pentagonal_tiling",
+	"page_width_inches" : 7,
+	"page_height_inches" : 7,
+	"tile_edge_length_inches" : 0.25,
+	"border_width_inches" : 0.25,
+	"piece_count" : 13,
+	"seed" : "cairo1",
+	"out_filename" : "cairo",
+	"output_to_pdf" : true,
+	"output_to_svg" : true,
+	"limited_run" : false,
+	"run_count" : 0,
+	"grid_type" : "cartesian",
+	"is_fixed_grid_rotation" : true,
+	"fixed_grid_rotation": 0.1,
+	"points" : [[0, 0],
+		    [-0.8660254037844386, -0.5],
+		    [-0.3660254037844386, -1.3660254037844386],
+		    [0.3660254037844386, -1.3660254037844386],
+		    [0.8660254037844386, -0.5]],
+	"transformations": [
+	    {
+		"type" : "rotation",
+		"center" : [0.8660254037844386, -0.5],
+		"join_count" : 4
+	    },
+	    {
+		"type" : "rotation",
+		"center" : [-0.8660254037844386, -0.5],
+		"join_count" : 4
+	    },
+	    {
+		"type" : "rotation",
+		"center" : [0, -1.3660254037844386],
+		"join_count" : 2
+	    }
+	]
+    },
+
+    {
+	"name" : "hexes",
+	"page_width_inches" : 7,
+	"page_height_inches" : 7,
+	"tile_edge_length_inches" : 0.25,
+	"border_width_inches" : 0.25,
+	"piece_count" : 13,
+	"seed" : "hexes",
+	"out_filename" : "hexes",
+	"output_to_pdf" : true,
+	"output_to_svg" : true,
+	"limited_run" : false,
+	"run_count" : 0,
+	"grid_type" : "triangular",
+	"is_fixed_grid_rotation" : false,
+	"fixed_grid_rotation": 0.3,
+	"points" : [[1, 0],
+		    [0, 1],
+		    [-1, 1],
+		    [-1, 0],
+		    [0, -1],
+		    [1, -1]],
+	"transformations": [
+	    {
+		"type" : "translation",
+		"offset" : [-1, 2]
+	    },
+	    {
+		"type" : "translation",
+		"offset" : [1, 1]
+	    }
+	]
+    },
+
+    {
+	"name" : "squares",
+	"page_width_inches" : 7,
+	"page_height_inches" : 7,
+	"tile_edge_length_inches" : 0.25,
+	"border_width_inches" : 0.25,
+	"piece_count" : 13,
+	"seed" : "squares",
+	"out_filename" : "squares",
+	"output_to_pdf" : true,
+	"output_to_svg" : true,
+	"limited_run" : false,
+	"run_count" : 0,
+	"grid_type" : "square",
+	"is_fixed_grid_rotation" : true,
+	"fixed_grid_rotation": 0.3,
+	"points" : [[0, 0],
+		    [0, 1],
+		    [1, 1],
+		    [1, 0]],
+	"transformations": [
+	    {
+		"type" : "translation",
+		"offset" : [0, 1]
+	    },
+	    {
+		"type" : "translation",
+		"offset" : [1, 0]
+	    }
+	]
+    },
+
+    {
+	"name" : "tiny_squares",
+	"page_width_inches" : 7,
+	"page_height_inches" : 7,
+	"tile_edge_length_inches" : 0.12,
+	"border_width_inches" : 0.15,
+	"piece_count" : 13,
+	"seed" : "squares",
+	"out_filename" : "tiny_squares",
+	"output_to_pdf" : true,
+	"output_to_svg" : true,
+	"limited_run" : false,
+	"run_count" : 0,
+	"grid_type" : "square",
+	"is_fixed_grid_rotation" : true,
+	"fixed_grid_rotation": 0.3,
+	"points" : [[0, 0],
+		    [0, 1],
+		    [1, 1],
+		    [1, 0]],
+	"transformations": [
+	    {
+		"type" : "translation",
+		"offset" : [0, 1]
+	    },
+	    {
+		"type" : "translation",
+		"offset" : [1, 0]
+	    }
+	]
+    }        
+    
+]
+	
