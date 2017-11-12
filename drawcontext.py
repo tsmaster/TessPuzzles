@@ -1,25 +1,38 @@
 from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch as pdfInch
 
+import svgwrite
+from svgwrite import inch as svgInch
+
+import bdggeom
+
+SVG_EDGE_WIDTH = "0.01mm"
+# to test
+#SVG_EDGE_WIDTH = "0.5mm"
 
 class DrawContext:
     def __init__(self, filename, widthInInches, heightInInches, pdf=True, svg=True):
         self.filename = filename
         self.pdfCanvas = None
+        self.heightInInches = heightInInches
+        self.widthInInches = widthInInches
+        self.strokeColor = (0, 0, 0)
         if pdf:
             self.pdfCanvas = canvas.Canvas(filename+".pdf",
-                                           pagesize=(widthInInches * inch + inch,
-                                                     heightInInches * inch + inch))
-            self.pdfCanvas.translate(0.5 * inch,
-                                     0.5 * inch)
+                                           pagesize=(widthInInches * pdfInch + pdfInch,
+                                                     heightInInches * pdfInch + pdfInch))
+            self.pdfCanvas.translate(0.5 * pdfInch,
+                                     0.5 * pdfInch)
         else:
             self.pdfCanvas = None
             
         if svg:
-            # TODO set this up
-            self.svgCanvas = None
+            self.svgCanvas = svgwrite.drawing.Drawing(filename=filename+".svg",
+                                                      size=(widthInInches * svgInch,
+                                                            heightInInches * svgInch))
         else:
             self.svgCanvas = None
+
 
     def save(self):
         if self.pdfCanvas:
@@ -28,12 +41,12 @@ class DrawContext:
             self.svgCanvas.save()
 
     def beginPath(self):
+        self.pdfPath = None
+
         if self.pdfCanvas:
             self.pdfPath = self.pdfCanvas.beginPath()
-        if self.svgCanvas:
-            pass
 
-        return PathContext(self, self.pdfPath)
+        return PathContext(self, self.pdfPath, bdggeom.Vec2f(0,0))
 
     def drawPath(self, pathContext):
         if self.pdfCanvas:
@@ -48,14 +61,11 @@ class DrawContext:
         if self.svgCanvas:
             #TODO
             pass
-        
 
     def setStrokeColorRGB(self, r, g, b):
+        self.strokeColor = (r, g, b)
         if self.pdfCanvas:
             self.pdfCanvas.setStrokeColorRGB(r, g, b)
-        if self.svgCanvas:
-            # TODO
-            pass
 
     def setFillColorRGB(self, r, g, b):
         if self.pdfCanvas:
@@ -64,15 +74,40 @@ class DrawContext:
             # TODO
             pass
 
+    def svgColor(self, r, g, b):
+        """ r,g,b are all within 0-1 """
+        return svgwrite.utils.rgb(r=int(r * 255),
+                                  g=int(g * 255),
+                                  b=int(b * 255))
+
+    def drawSVGLine(self, vec1, vec2):
+        if not self.svgCanvas:
+            return
+
+        self.svgCanvas.add(self.svgCanvas.line(start = (vec1.x * svgInch,
+                                                        (self.heightInInches - vec1.y) * svgInch),
+                                               end = (vec2.x * svgInch,
+                                                      (self.heightInInches - vec2.y) * svgInch),
+                                               stroke = self.svgColor(*self.strokeColor),
+                                               fill = "none",
+                                               stroke_width = SVG_EDGE_WIDTH))
+
 
 class PathContext:
-    def __init__(self, drawContext, pdfPath):
+    def __init__(self, drawContext, pdfPath, startVec):
         self.drawContext = drawContext
         self.pdfPath = pdfPath
+        self.position = startVec
 
     def moveTo(self, x, y):
-        self.pdfPath.moveTo(x * inch, y * inch)
+        if not (self.pdfPath is None):
+            self.pdfPath.moveTo(x * pdfInch, y * pdfInch)
+        self.position = bdggeom.Vec2f(x, y)
 
     def lineTo(self, x, y):
-        self.pdfPath.lineTo(x * inch, y * inch)
+        if not (self.pdfPath is None):
+            self.pdfPath.lineTo(x * pdfInch, y * pdfInch)
+        newPosn = bdggeom.Vec2f(x,y)
+        self.drawContext.drawSVGLine(self.position, newPosn)
+        self.position = newPosn
         

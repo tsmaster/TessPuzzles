@@ -16,9 +16,9 @@ import grids
 import halfplane
 import shapes
 
-CUT_COLOR = (1, 0, 0)
-ENGRAVE_COLOR = (0, 1, 0)
-LABEL_COLOR = (0, 0, 1)
+CUT_COLOR = (0, 0, 1)
+ENGRAVE_COLOR = (1, 0, 0)
+LABEL_COLOR = (1, 0, 0)
 
 
 """
