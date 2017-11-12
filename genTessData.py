@@ -288,16 +288,54 @@ def makeExactHalfPlanes(puzzleDesc):
     exactHalfPlanes = [leftHP, rightHP, bottomHP, topHP]
     return exactHalfPlanes
 
-def makeClustersFromDist(pieces, numClusters):
+def makeClustersWithRelaxation(pieces, numClusters, width, height):
+    seedVertices = {}
     for clusterIndex in range(1, numClusters + 1):
-        print "cluster Index:", clusterIndex
-        unusedClusterCount = len(getUnusedPieceIndices(pieces))
-        print "ucc:", unusedClusterCount
-        numPiecesInCluster = unusedClusterCount / (numClusters - clusterIndex + 1)
-        print "npic:", numPiecesInCluster
-        if numPiecesInCluster == 0:
+        seedVertices[clusterIndex] = bdggeom.Vec2f(random.uniform(0, width),
+                                                   random.uniform(0, height))
+    TOLERANCE = 0.01
+    while True:
+        setClustersByProximity(pieces, seedVertices)
+        anyMoved = False
+        for clusterIndex, clusterCenter in seedVertices.iteritems():
+            newClusterCenter = findClusterCenter(pieces, clusterIndex)
+            if newClusterCenter is None:
+                anyMoved = True
+                continue
+            
+            dist = (clusterCenter - newClusterCenter).magnitude()
+            if dist > TOLERANCE:
+                anyMoved = True
+                #print "cluster {0} moved by {1}".format(clusterIndex, dist)
+            seedVertices[clusterIndex] = newClusterCenter
+        if not anyMoved:
             return
-        makeClusterFromFarthestFromCenter(pieces, numPiecesInCluster, clusterIndex)
+
+def findClusterCenter(pieces, clusterIndex):
+    centerPoint = bdggeom.Vec2f(0, 0)
+    pieceCount = 0
+    for p in pieces:
+        if p.clusterIndex == clusterIndex:
+            pieceCount += 1
+            centerPoint += p.getCenter()
+    if pieceCount == 0:
+        return None
+    return centerPoint * (1.0 / pieceCount)
+
+def setClustersByProximity(pieces, seedVertices):
+    for p in pieces:
+        if p.clusterIndex == 0:
+            continue
+        pc = p.getCenter()
+        bestCluster = -1
+        bestDistance = None
+        for ci, seedVec in seedVertices.iteritems():
+            dist = (seedVec - pc).magnitude()
+            if ((bestCluster == -1) or
+                (dist < bestDistance)):
+                bestCluster = ci
+                bestDistance = dist
+        p.clusterIndex = bestCluster
 
 def unsetStragglers(pieces):
     lowestConnectedPieceIndexByPieceIndex = {}
@@ -1050,11 +1088,11 @@ def makePuzzle(puzzleName):
         piece.addEdgesToEdgeDictionary(puzz.edgeToPieceIndexDictionary)
 
     for pi,piece in enumerate(puzz.pieces):
-        print "finding neighbors for", pi
+        #print "finding neighbors for", pi
         piece.findNeighborsFromEdgeDictionary(puzz.edgeToPieceIndexDictionary)
 
-    for pi, piece in enumerate(puzz.pieces):
-        print pi, len(piece.neighborPieces)
+    #for pi, piece in enumerate(puzz.pieces):
+    #    print pi, len(piece.neighborPieces)
 
     for piece in puzz.pieces:
         piece.clusterIndex = -1
@@ -1063,7 +1101,9 @@ def makePuzzle(puzzleName):
         if piece.partiallyOutside(puzz.innerHalfPlanes):
             piece.clusterIndex = 0
 
-    makeClustersFromDist(puzz.pieces, puzz.desc.getPieceCount())
+    makeClustersWithRelaxation(puzz.pieces, puzz.desc.getPieceCount(),
+                               puzz.desc.getPageWidthInches(),
+                               puzz.desc.getPageHeightInches())
 
     unsetStragglers(puzz.pieces)
     randomlyAssignUnset(puzz.pieces)
