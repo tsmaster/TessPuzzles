@@ -10,38 +10,11 @@ import random
 import sys
 
 import bdggeom
-import halfplane
+import drawcontext
 import font
-import shapes
 import grids
-
-#OLD_PAGE_WIDTH_INCHES = 7
-#OLD_PAGE_HEIGHT_INCHES = 7
-
-#OLD_TILE_EDGE_LENGTH_INCHES = 0.1
-
-#OLD_TILE_EDGE_LENGTH = TILE_EDGE_LENGTH_INCHES * inch
-
-#OLD_BORDER_WIDTH_INCHES = TILE_EDGE_LENGTH_INCHES
-
-#OLD_PAGE_XC_INCHES = PAGE_WIDTH_INCHES / 2
-#OLD_PAGE_YC_INCHES = PAGE_HEIGHT_INCHES / 2
-
-#OLD_PIECE_COUNT = 12
-
-
-#OLD_RAND_SEED = "Dogbone"
-#OLD_OUT_BASE_FILENAME = "dogbone"
-#OLD_OUT_SUFFIX = ".pdf"
-
-
-#OLD_CAMERA_R = random.uniform(0, 9 * inch)
-#OLD_CAMERA_THETA = random.uniform(0, 2 * math.pi)
-
-#OLD_CAMERA_X = CAMERA_R * math.cos(CAMERA_THETA)
-#OLD_CAMERA_Y = CAMERA_R * math.sin(CAMERA_THETA)
-
-#OLD_CAMERA_SCALE = 2 # units per inch
+import halfplane
+import shapes
 
 CUT_COLOR = (1, 0, 0)
 ENGRAVE_COLOR = (0, 1, 0)
@@ -49,19 +22,7 @@ LABEL_COLOR = (0, 0, 1)
 
 
 """
-plan:
-
-X - take a piece definition (points, transformations, grid def)
-X - place a seed piece somewhere inside the workspace
-X - flood fill transformed copies until all are outside limits
-X - make boundary
-X - make clusters
-X - crop edges
-X - support rotating grid
-
-
-TODO LATER
-support dynamic puzzle definition
+TODO
 support definition with more than one piece
 support engrave lines
 support "logical" neighbor connection lines
@@ -926,12 +887,11 @@ class Puzzle:
                 label = self.desc.getName()
                 filename = self.desc.getOutputFilename()
 
-            drawContext = DrawContext(filename,
-                                      self.desc.getPageWidthInches(),
-                                      self.desc.getPageHeightInches(),
-                                      self.desc.isPDFEnabled(),
-                                      self.desc.isSVGEnabled())
-
+            drawContext = drawcontext.DrawContext(filename,
+                                                  self.desc.getPageWidthInches(),
+                                                  self.desc.getPageHeightInches(),
+                                                  self.desc.isPDFEnabled(),
+                                                  self.desc.isSVGEnabled())
             
             # TODO - support drawing strategies
             DRAW_SINGLE_PIECE = False
@@ -1111,80 +1071,8 @@ def makePuzzle(puzzleName):
     return puzz
 
 
-class PathContext:
-    def __init__(self, drawContext, pdfPath):
-        self.drawContext = drawContext
-        self.pdfPath = pdfPath
-
-    def moveTo(self, x, y):
-        self.pdfPath.moveTo(x * inch, y * inch)
-
-    def lineTo(self, x, y):
-        self.pdfPath.lineTo(x * inch, y * inch)
             
     
-
-class DrawContext:
-    def __init__(self, filename, widthInInches, heightInInches, pdf=True, svg=True):
-        self.filename = filename
-        self.pdfCanvas = None
-        if pdf:
-            self.pdfCanvas = canvas.Canvas(filename+".pdf",
-                                           pagesize=(widthInInches * inch + inch,
-                                                     heightInInches * inch + inch))
-            self.pdfCanvas.translate(0.5 * inch,
-                                     0.5 * inch)
-        else:
-            self.pdfCanvas = None
-            
-        if svg:
-            # TODO set this up
-            self.svgCanvas = None
-        else:
-            self.svgCanvas = None
-
-    def save(self):
-        if self.pdfCanvas:
-            self.pdfCanvas.save()
-        if self.svgCanvas:
-            self.svgCanvas.save()
-
-    def beginPath(self):
-        if self.pdfCanvas:
-            self.pdfPath = self.pdfCanvas.beginPath()
-        if self.svgCanvas:
-            pass
-
-        return PathContext(self, self.pdfPath)
-
-    def drawPath(self, pathContext):
-        if self.pdfCanvas:
-            self.pdfCanvas.drawPath(pathContext.pdfPath, stroke = 1)
-        if self.svgCanvas:
-            #TODO
-            pass
-
-    def drawFilledPath(self, pathContext):
-        if self.pdfCanvas:
-            self.pdfCanvas.drawPath(pathContext.pdfPath, fill = 1)
-        if self.svgCanvas:
-            #TODO
-            pass
-        
-
-    def setStrokeColorRGB(self, r, g, b):
-        if self.pdfCanvas:
-            self.pdfCanvas.setStrokeColorRGB(r, g, b)
-        if self.svgCanvas:
-            # TODO
-            pass
-
-    def setFillColorRGB(self, r, g, b):
-        if self.pdfCanvas:
-            self.pdfCanvas.setFillColorRGB(r, g, b)
-        if self.svgCanvas:
-            # TODO
-            pass
 
     
         
