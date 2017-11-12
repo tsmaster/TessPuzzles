@@ -412,20 +412,20 @@ def randomlyAssignUnset(pieces):
             piece.clusterIndex = randNeighbor.clusterIndex
         
 
-def componentSizeByLowestConnectedRI(rhombList, lri, lowestConnectedRIByRI):
+def componentSizeByLowestConnectedPieceIndex(pieces, lri, lowestConnectedPieceIndexByPieceIndex):
     c = 0
-    for ri, r in enumerate(rhombList):
-        if lowestConnectedRIByRI[ri] == lri:
+    for pi, p in enumerate(pieces):
+        if lowestConnectedPieceIndexByPieceIndex[pi] == lri:
             c += 1
     return c
 
-def findBiggestComponentRoot(rhombList,
+def findBiggestComponentRoot(pieces,
                              lcrbr,
                              lcbci,
                              ci):
     sizes = []
     for c in lcbci[ci]:
-        s = componentSizeByLowestConnectedRI(rhombList, c, lcrbr)
+        s = componentSizeByLowestConnectedPieceIndex(pieces, c, lcrbr)
         sizes.append((s, c))
     sizes.sort()
     print "sizes:", sizes
@@ -497,19 +497,6 @@ def makeClusterFromFarthestFromCenter(pieces, newClusterCount, clusterIndex):
     for d,i in supiList:
         pieces[i].clusterIndex = clusterIndex
 
-def growClusterFromSeeds(rhombList, seedIndices, newClusterCount, clusterIndex):
-    seedRhombIndex = findSeedRhomb(rhombList)
-    # start the cluster with that seed
-
-    while getClusterCount(clusterIndex) < newClusterCount:
-        # find all unused rhombs on border of cluster
-        adjRhombs = getRhombsAdjacentToCluster(clusterIndex)
-        if not adjRhombs:
-            return False
-        getCenterOfCluster(clusterIndex)
-        # pick rhomb closest to the center
-        # add it to the cluster
-    return True
 
 
 def drawPieces(c, pieces):
@@ -520,17 +507,6 @@ def drawPiecesWithColor(c, pieces, rgb):
     c.setStrokeColorRGB(*rgb)
     for p in pieces:
         p.drawToCanvas(c)
-
-def drawRhombsWithStrokeColor(c, pieces, rgb):
-    c.setStrokeColorRGB(*rgb)
-    for p in pieces:
-        p.drawToCanvas(c)
-
-def drawRhombsWithFillColor(c, rhombList, vertList, rgb):
-    c.setStrokeColorRGB(0, 0, 0)
-    c.setFillColorRGB(*rgb)
-    for r in rhombList:
-        r.drawToCanvas(c, vertList, stroke = 0, fill = 1)
 
         
 def clipEdgeToHalfPlane(e, hp):
@@ -566,62 +542,6 @@ def clipEdgeToHalfPlaneList(e, hpl):
         if e is None:
             return None
     return e
-
-def drawEdges(c, vertList, rhombList, clipLeft, clipBottom, clipRight, clipTop):
-    edges = {}
-
-    halfPlanes = [
-        halfplane.HalfPlane(bdggeom.Vec2f(clipLeft, clipBottom),
-                            bdggeom.Vec2f(1, 0)),
-        halfplane.HalfPlane(bdggeom.Vec2f(clipLeft, clipBottom),
-                            bdggeom.Vec2f(0, 1)),
-        halfplane.HalfPlane(bdggeom.Vec2f(clipRight, clipTop),
-                            bdggeom.Vec2f(-1, 0)),
-        halfplane.HalfPlane(bdggeom.Vec2f(clipRight, clipTop),
-                            bdggeom.Vec2f(0, -1)),
-        ]
-
-    for ri, r in enumerate(rhombList):
-        for vii in range(len(r.vertIndices)):
-            vi0 = r.vertIndices[vii-1]
-            vi1 = r.vertIndices[vii]
-
-            key = min((vi0, vi1), (vi1, vi0))
-            edgeList = edges.get(key, [])
-            edgeList.append(ri)
-            edges[key] = edgeList
-
-    for key in edges:
-        isCut = False
-
-        rhombs = edges[key]
-        #if len(rhombs) == 1:
-        #    isCut = True
-        if len(rhombs) == 2:
-            ri0, ri1 = rhombs
-            r0 = rhombList[ri0]
-            r1 = rhombList[ri1]
-            if (r0.clusterIndex != r1.clusterIndex):
-                isCut = True
-
-        if isCut:
-            c.setStrokeColorRGB(*CUT_COLOR)
-        else:
-            c.setStrokeColorRGB(*ENGRAVE_COLOR)
-        vi0, vi1 = key
-        v0 = vertList[vi0]
-        v1 = vertList[vi1]
-        newEdge = clipEdgeToHalfPlaneList((v0, v1), halfPlanes)
-
-        if newEdge is None:
-            continue
-        
-        v0, v1 = newEdge
-        
-        p = c.beginPath()
-        p.moveTo(v0.x, v0.y)
-        p.lineTo(v1.x, v1.y)
-        c.drawPath(p, stroke=1, fill=0)
 
 def drawBoundingBox(drawContext, left, bottom, right, top):
     drawContext.setStrokeColorRGB(*CUT_COLOR)
