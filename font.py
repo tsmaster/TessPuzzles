@@ -115,7 +115,7 @@ def drawStringToDrawContext(drawContext, string, font, posVec, height):
 
 
 def test_strings():
-    c = drawcontext.DrawContext("testfont", 8, 8)
+    c = drawcontext.DrawContext("testfont", ".", 8, 8)
 
     c.setStrokeColorRGB(1, 0, 0)
 

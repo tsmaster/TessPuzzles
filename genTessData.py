@@ -801,6 +801,7 @@ class Puzzle:
         self.vertexList = []
         self.pieces = []
         self.edgeToPieceIndexDictionary = {}
+        self.outputdir = '.'
 
     def addPieceToVertexList(self, piece):
         """
@@ -847,6 +848,7 @@ class Puzzle:
                 filename = self.desc.getOutputFilename()
 
             drawContext = drawcontext.DrawContext(filename,
+                                                  self.outputdir,
                                                   self.desc.getPageWidthInches(),
                                                   self.desc.getPageHeightInches(),
                                                   self.desc.isPDFEnabled(),
@@ -969,9 +971,10 @@ def makeBasePieces(puzzDesc,
 
     
 
-def makePuzzle(puzzleName, piecefile):
+def makePuzzle(puzzleName, piecefile, outputdir):
     puzz = Puzzle()
-    puzz.desc = getPuzzDesc(piecefile, puzzleName) 
+    puzz.desc = getPuzzDesc(piecefile, puzzleName)
+    puzz.outputdir = outputdir
 
     if not puzz.desc:
         print "no puzzle description found"
@@ -1049,6 +1052,10 @@ if __name__ == "__main__":
                         "--piecefile",
                         default="pieces.json",
                         help="name of the JSON file describing the puzzles")
+    parser.add_argument("-od",
+                        "--outputdir",
+                        default="Output",
+                        help="name of (relative) directory where output will be generated")
     parser.add_argument("puzzlename",
                         nargs="+",
                         help="name of the puzzle(s) to generate")
@@ -1056,7 +1063,7 @@ if __name__ == "__main__":
     
     for pn in args.puzzlename:
         print "trying to make puzzle name:", pn
-        puzzle = makePuzzle(pn, args.piecefile)
+        puzzle = makePuzzle(pn, args.piecefile, args.outputdir)
         print "rendering puzzle"
         puzzle.render()
         

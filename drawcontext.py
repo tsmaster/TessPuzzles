@@ -1,8 +1,9 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch as pdfInch
-
 import svgwrite
 from svgwrite import inch as svgInch
+
+import os
 
 import bdggeom
 
@@ -11,14 +12,15 @@ SVG_EDGE_WIDTH = "0.01mm"
 #SVG_EDGE_WIDTH = "0.5mm"
 
 class DrawContext:
-    def __init__(self, filename, widthInInches, heightInInches, pdf=True, svg=True):
+    def __init__(self, filename, outputdir, widthInInches, heightInInches, pdf=True, svg=True):
         self.filename = filename
+        self.outputdir = outputdir
         self.pdfCanvas = None
         self.heightInInches = heightInInches
         self.widthInInches = widthInInches
         self.strokeColor = (0, 0, 0)
         if pdf:
-            self.pdfCanvas = canvas.Canvas(filename+".pdf",
+            self.pdfCanvas = canvas.Canvas(os.path.join(outputdir, filename+".pdf"),
                                            pagesize=(widthInInches * pdfInch + pdfInch,
                                                      heightInInches * pdfInch + pdfInch))
             self.pdfCanvas.translate(0.5 * pdfInch,
@@ -27,7 +29,7 @@ class DrawContext:
             self.pdfCanvas = None
             
         if svg:
-            self.svgCanvas = svgwrite.drawing.Drawing(filename=filename+".svg",
+            self.svgCanvas = svgwrite.drawing.Drawing(filename=os.path.join(outputdir, filename+".svg"),
                                                       size=(widthInInches * svgInch,
                                                             heightInInches * svgInch))
         else:
