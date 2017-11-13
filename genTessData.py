@@ -4,6 +4,7 @@ import reportlab.rl_config
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
+import argparse
 import json
 import math
 import random
@@ -104,7 +105,7 @@ class PuzzDesc:
         return self.pdDict["output_to_svg"]
         
 
-def getPuzzDesc(puzzName, filename="pieces.json"):
+def getPuzzDesc(filename, puzzName):
     fileData = open(filename).read()
     pieceList = json.loads(fileData)
 
@@ -968,9 +969,9 @@ def makeBasePieces(puzzDesc,
 
     
 
-def makePuzzle(puzzleName):
+def makePuzzle(puzzleName, piecefile):
     puzz = Puzzle()
-    puzz.desc = getPuzzDesc(puzzleName) 
+    puzz.desc = getPuzzDesc(piecefile, puzzleName) 
 
     if not puzz.desc:
         print "no puzzle description found"
@@ -1043,14 +1044,19 @@ def drawSinglePiece(c, piece):
     piece.drawDebugTransformedToCanvas(c)
 
 if __name__ == "__main__":
-    # TODO fancier argument parsing
-    if len(sys.argv) == 1:
-        print "usage: genTessData.py <puzzname>*"
-        exit(-1)
+    parser = argparse.ArgumentParser("generate puzzles in PDF and/or SVG")
+    parser.add_argument("-pf",
+                        "--piecefile",
+                        default="pieces.json",
+                        help="name of the JSON file describing the puzzles")
+    parser.add_argument("puzzlename",
+                        nargs="+",
+                        help="name of the puzzle(s) to generate")
+    args = parser.parse_args()
     
-    for puzzName in sys.argv[1:]:
-        print "trying to make puzzle name:", puzzName
-        puzzle = makePuzzle(puzzName)
+    for pn in args.puzzlename:
+        print "trying to make puzzle name:", pn
+        puzzle = makePuzzle(pn, args.piecefile)
         print "rendering puzzle"
         puzzle.render()
         
