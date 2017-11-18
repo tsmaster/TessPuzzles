@@ -51,12 +51,22 @@ class PuzzDesc:
         return float(self.pdDict["fixed_grid_rotation"])
 
     def getPiecePointsAndTransformations(self):
-        # TODO support multipiece
+        pieces = []
 
-        points = []
-        for p in self.pdDict["points"]:
-            x, y = p
-            points.append((x,y))
+        if "pieces" in self.pdDict:
+            for pc in self.pdDict["pieces"]:
+                piece = []
+                for p in pc:
+                    x, y = p
+                    piece.append((x, y))
+                pieces.append(piece)
+        elif "points" in self.pdDict:
+            piece = []
+            for p in self.pdDict["points"]:
+                x, y = p
+                piece.append((x,y))
+            pieces.append(piece)
+            
         transformations = []
         
         for t in self.pdDict["transformations"]:
@@ -70,7 +80,7 @@ class PuzzDesc:
                 o = t["offset"]
                 ox, oy = o
                 transformations.append(shapes.makeTranslationDesc((ox, oy)))
-        yield (points, transformations)
+        yield (pieces, transformations)
 
         return
 
@@ -373,7 +383,7 @@ def unsetStragglers(pieces):
             lowestConnectionsByClusterIndex[ci].append(pi)
     for ci in lowestConnectionsByClusterIndex:
         if len(lowestConnectionsByClusterIndex[ci]) > 1:
-            print ci, lowestConnectionsByClusterIndex[ci], "DUP"
+            print ci, lowestConnectionsByClusterIndex[ci], "is disconnected"
 
             biggestComponentRoot = findBiggestComponentRoot(pieces,
                                                             lowestConnectedPieceIndexByPieceIndex,
@@ -956,18 +966,16 @@ class Puzzle:
 
 def makeBasePieces(puzzDesc,
                    grid):
-    pieces = []
+    basePieces = []
 
-    # TODO support multiPiece
+    for pieces, transformations in puzzDesc.getPiecePointsAndTransformations():
+        for points in pieces:
+            p0 = TessPiece(points,
+                           transformations,
+                           grid)
+            basePieces.append(p0)
 
-    for points, transformations in puzzDesc.getPiecePointsAndTransformations():
-        p0 = TessPiece(points,
-                       transformations,
-                       grid)
-
-        pieces.append(p0)
-
-    return pieces
+    return basePieces
 
     
 
